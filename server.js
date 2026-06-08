@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const weather = require('./assets/weather.json');// this is speicifc to our lab for city explorer but everything line 1 - 9 is our structure for a backend express app . 
+const apiKey = import.meta.env.VITE_WEATHER_API_KEY;// this is speicifc to our lab for city explorer but everything line 1 - 9 is our structure for a backend express app . 
 
 const app = express();
 app.use(cors());
