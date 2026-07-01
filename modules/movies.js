@@ -1,4 +1,5 @@
 const axios = require('axios');
+const cache = require('../cache');
 
 const MOVIE_API_KEY = process.env.MOVIE_API_KEY;
 
@@ -27,9 +28,26 @@ class Movie {
 
 async function getMovies(request, response) {
 
+    const CACHE_TIME = 1000 * 60 * 60;
+
   try {
 
     const { searchQuery } = request.query;
+    const key = searchQuery.toLowerCase();
+    const cachedMovie = cache[key];
+
+    if (
+        cachedMovie &&
+        Date.not() - cachedMovie.timestamp < CACHE_TIME
+    ) { 
+
+        console.log('CACHE HIT');
+
+        response.send(cachedMovie.data);
+
+        return; 
+
+    }
 
     const movieURL =
       `https://api.themoviedb.org/3/search/movie?api_key=${MOVIE_API_KEY}&query=${searchQuery}`;
@@ -38,6 +56,14 @@ async function getMovies(request, response) {
 
     const movies =
       movieResponse.data.results.map(movie => new Movie(movie));
+
+    cache[key] = {
+        timestamp: Date.now(),
+
+        data: movies
+    };
+
+    console.log('CACHE MISS');
 
     response.send(movies);
 
